@@ -9,9 +9,17 @@
 
 secrets.yaml
 
+.blueprints
+.custom_components/hacs
+.HA_VERSION
+automation.yaml
+groups.yaml
 .ssh
 .storage
 .cloud
 .google.token
 home-assistant.log*
+home-assistant_v2.db*
+scenes.yaml
+scripts.yaml
 id_rsa*
