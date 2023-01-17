@@ -1,0 +1,50 @@
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+
+wake_on_lan:
+
+switch:
+  - platform: wake_on_lan
+    mac: 00:68:eb:a5:35:c4
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# template:
+#   - sensor:
+#       - name: plante
+#         state: >
+#           {% if states.sensor.soil_moisture_raud.state | float <77 %}
+#             dead
+#           {% elif states.sensor.soil_moisture_raud.state | float <80 %}
+#             wet
+#           {% elif states.sensor.soil_moisture_raud.state | float <100 %}
+#             drown
+#           {% endif %}
+
+template:
+  - sensor:
+      - name: plante
+        state: >
+          {% if states.sensor.soil_moisture_raud.state | float <20 %}
+            dead
+          {% elif states.sensor.soil_moisture_raud.state | float <40 %}
+            dry
+          {% elif states.sensor.soil_moisture_raud.state | float <80 %}
+            ok
+          {% elif states.sensor.soil_moisture_raud.state | float <95 %}
+            wet
+          {% elif states.sensor.soil_moisture_raud.state | float <101 %}
+            filled
+          {% endif %}

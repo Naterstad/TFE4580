@@ -1,0 +1,108 @@
+esphome:
+  name: soilsensor1
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "FhQkIPEw7EJe+WUnFrNAvWQGlvRfh3fZLWUcdsRD0J4="
+
+ota:
+  password: "4c787dae68b6516bacf844fd6d604a1a"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Soilsensor1 Fallback Hotspot"
+    password: "szB5rH9oz3KR"
+
+captive_portal:
+
+sensor:
+  - platform: adc
+    pin: GPIO36
+    name: "Soil Moisture Calathea"
+    update_interval: 10s
+    unit_of_measurement: "%"
+    attenuation: 11db
+    filters:
+    - median:
+        window_size: 7
+        send_every: 4
+        send_first_at: 1
+    - calibrate_linear:
+        - 1.095 -> 100.00
+        - 2.288 -> 0.00
+    - lambda: |
+        if (x < 0) return 0; 
+        else if (x > 100) return 100;
+        else return (x);
+    accuracy_decimals: 0
+  
+  - platform: adc
+    pin: GPIO34
+    name: "Soil Moisture Raud"
+    update_interval: 10s
+    unit_of_measurement: "%"
+    attenuation: 11db
+    filters:
+    - median:
+        window_size: 7
+        send_every: 4
+        send_first_at: 1
+    - calibrate_linear:
+        - 1.095 -> 100.00
+        - 2.288 -> 0.00
+    - lambda: |
+        if (x < 0) return 0; 
+        else if (x > 100) return 100;
+        else return (x);
+    accuracy_decimals: 0
+
+  - platform: dht
+    pin: GPIO04
+    model: AM2302  ### <--- also note this
+    update_interval: 15s
+    temperature:
+      name: "Temp Calathea"
+      filters:
+        - sliding_window_moving_average:
+            window_size: 15
+            send_every: 15
+            send_first_at: 15
+    humidity:
+      name: "Luftfuktighet Calathea"
+      filters:
+        - sliding_window_moving_average:
+            window_size: 15
+            send_every: 15
+            send_first_at: 15
+
+  - platform: dht
+    pin: GPIO02
+    model: AM2302  ### <--- also note this
+    update_interval: 15s
+    temperature:
+      name: "Temp vindu"
+      filters:
+        - sliding_window_moving_average:
+            window_size: 15
+            send_every: 15
+            send_first_at: 15
+    humidity:
+      name: "Luftfuktighet vindu"
+      filters:
+        - sliding_window_moving_average:
+            window_size: 15
+            send_every: 15
+            send_first_at: 15
